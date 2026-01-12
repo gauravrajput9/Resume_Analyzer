@@ -3,10 +3,13 @@ import React, { useState } from "react";
 import Image from "next/image";
 import { signIn } from "next-auth/react";
 import { toast } from "sonner";
+import { signUp } from "@/actions/auth.actions";
 import { Loader } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 const SignupPage = () => {
   // State to hold user input
+  const router = useRouter()
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -40,6 +43,7 @@ const SignupPage = () => {
     setError("");
     setLoading(true);
     const res = await signUp(name, email, password);
+    router.push("/login")
     setLoading(false);
     if (res.success == true) {
       toast.success(res.message);

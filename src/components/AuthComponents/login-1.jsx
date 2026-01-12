@@ -1,14 +1,18 @@
 "use client";
 import React, { useState } from "react";
 import Image from "next/image";
-import { signIn } from "next-auth/react";
+import { signIn, useSession } from "next-auth/react";
 import { Loader } from "lucide-react";
+import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 
 const LoginPage = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [googleLoading, setGoogleLoading] = useState(false);
   const [githubLoading, setgithubLoading] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const { data: session } = useSession();
 
   const handleGoogleLogin = async () => {
     setGoogleLoading(true);
@@ -25,11 +29,26 @@ const LoginPage = () => {
     setgithubLoading(false);
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Email:", email);
-    console.log("Password:", password);
-    // Here you can send the data to your API or auth service
+    if (!email || !password) {
+      if (!email) toast.error("Please Enter the Email");
+      if (!password) toast.error("Please Enter A Password");
+      return;
+    }
+    setLoading(true);
+    const res = await signIn("credentials", {
+      email,
+      password,
+      redirect: false,
+    });
+    setLoading(false);
+    console.log(res);
+    if (res.ok) {
+      toast.success("LogIn Successfull");
+    } else {
+      toast.error("Login Failed");
+    }
   };
 
   return (
@@ -58,6 +77,7 @@ const LoginPage = () => {
             {/* Email */}
             <input
               type="email"
+              name="email"
               placeholder="Email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
@@ -70,6 +90,7 @@ const LoginPage = () => {
               type="password"
               placeholder="Password"
               value={password}
+              name="password"
               onChange={(e) => setPassword(e.target.value)}
               className="w-full h-12 rounded-md bg-neutral-900 border-2 border-neutral-700 px-4 text-sm text-white outline-none transition focus:border-white/60 placeholder:text-gray-400"
               required
@@ -83,14 +104,14 @@ const LoginPage = () => {
             <div className="flex justify-center gap-4 mb-4">
               {/* Google */}
               <button
+                disabled={session ? true : false}
                 type="button"
                 onClick={() => handleGoogleLogin()}
                 className="flex items-center gap-2 border border-neutral-700 rounded-md px-4 py-2 text-sm text-white hover:bg-neutral-800 transition"
               >
                 {googleLoading ? (
                   <>
-                    <Loader className="animate-spin h-3 w-3" />
-                    <p>Redirecting</p>
+                    <Loader className="animate-spin h-6 w-6" />
                   </>
                 ) : (
                   <>
@@ -119,14 +140,14 @@ const LoginPage = () => {
 
               {/* GitHub */}
               <button
+                disabled={session ? true : false}
                 onClick={() => handleGitHubLogin()}
                 type="button"
                 className="flex items-center gap-2 border border-neutral-700 rounded-md px-4 py-2 text-sm text-white hover:bg-neutral-800 transition"
               >
                 {githubLoading ? (
                   <>
-                    <Loader className="animate-spin h-3 w-3" />
-                    <p>Redirecting</p>
+                    <Loader className="animate-spin h-6 w-6" />
                   </>
                 ) : (
                   <>
@@ -145,7 +166,13 @@ const LoginPage = () => {
             </div>
 
             <button className="mt-2 relative inline-flex justify-center items-center rounded-md bg-white text-black px-6 py-2 text-sm font-medium transition hover:scale-105">
-              Sign In
+              {loading ? (
+                <>
+                  <Loader className="animate-spin h-6 w-6" />
+                </>
+              ) : (
+                "Sign In"
+              )}
             </button>
           </form>
         </div>

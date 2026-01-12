@@ -1,8 +1,12 @@
+'use client'
 import { Button } from "@/components/hero/Button";
 import { ArrowRight, ChevronLeft } from "lucide-react";
+import { useSession } from "next-auth/react";
 import Link from "next/link";
 
 const ATSInfoPage = () => {
+  const {data: session} = useSession()
+  console.log(session)
   return (
     <section className="min-h-screen bg-black text-white px-6 py-32">
       <div className="max-w-5xl mx-auto flex flex-col gap-16">

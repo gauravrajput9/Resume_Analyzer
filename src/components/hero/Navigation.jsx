@@ -38,7 +38,7 @@ export const Navigation = () => {
               >
                 Logout
               </button>
-              <Link href="/resume">
+              <Link href="/resume-analyzer">
                 <Button size="sm">Analyze Resume</Button>
               </Link>
             </>
