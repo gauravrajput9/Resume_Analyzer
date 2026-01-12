@@ -7,6 +7,9 @@ const nextConfig = {
       {hostname: "www.jobhero.com"}
     ],
   },
+  experimental: {
+    serverComponentsExternalPackages: ["pdf-parse"],
+  },
 };
 
 export default nextConfig;

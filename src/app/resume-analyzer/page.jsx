@@ -4,24 +4,68 @@ import ResumeUpload from "@/components/resume/FileUpload";
 import AnalysisOptions from "@/components/resume/AnalysisOptions";
 import AnalyzeButton from "@/components/resume/AnalyzeButton";
 import AnalysisProgress from "@/components/resume/AnalysisProgress";
-import AnalysisResult from "@/components/resume/AnalysisResult";
 import { useState } from "react";
-import { useRouter } from "next/navigation";
-import { mockResumeAnalysis } from "@/lib/mockAnalysis";
+import FakeRes from "@/components/fakeres";
 
 export default function ResumeAnalyzerPage() {
-  const router = useRouter();
-  const [result, setResult] = useState(null)
   const [file, setFile] = useState(null);
   const [loading, setLoading] = useState(false);
-  console.log(file)
+  const [result, setResult] = useState(null);
+  const [error, setError] = useState(null);
 
   const handleAnalyze = async () => {
+    if (!file) return;
+
     setLoading(true);
-    await new Promise((res) => setTimeout(res, 3000));
-    setResult(mockResumeAnalysis);
-    setLoading(false);
-    router.push("/resume-analyzer/results");
+    setError(null);
+    setResult(null);
+
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
+
+      const response = await fetch("/api/resume/upload", {
+        method: "POST",
+        body: formData,
+      });
+
+      if (!response.ok) {
+        const err = await response.json();
+        setError(err.error || "Failed to upload file");
+        setLoading(false);
+        return;
+      }
+
+      const result = await response.json();
+
+      // send the data to the ai for resume Analysis
+      if (!result.text) {
+        setError("Failed to extract text from PDF");
+        setLoading(false);
+        return;
+      }
+
+      const analyzeRes = await fetch("/api/resume/analyze", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ text: result.text }),
+      });
+
+      if (!analyzeRes.ok) {
+        const err = await analyzeRes.json();
+        setError(err.error || "Failed to analyze resume");
+        setLoading(false);
+        return;
+      }
+
+      const analyzeData = await analyzeRes.json();
+      setResult(analyzeData.result);
+    } catch (error) {
+      console.error("Error:", error);
+      setError(error.message || "An unexpected error occurred");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -49,8 +93,15 @@ export default function ResumeAnalyzerPage() {
             onClick={handleAnalyze}
           />
           {loading && <AnalysisProgress />}
+          {error && (
+            <div className="w-full max-w-2xl p-4 bg-red-900/20 border border-red-500 rounded-lg text-red-400">
+              <p className="font-semibold">Error:</p>
+              <p>{error}</p>
+            </div>
+          )}
         </div>
 
+        <FakeRes data={result} />
       </div>
     </div>
   );

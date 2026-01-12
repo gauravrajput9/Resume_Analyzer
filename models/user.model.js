@@ -18,6 +18,7 @@ const userSchema = new Schema(
       type: String,
       required: true,
     },
+    plan: { type: String, default: "FREE" },
   },
   { timestamps: true }
 );
