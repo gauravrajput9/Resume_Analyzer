@@ -67,7 +67,7 @@ const AnalysisResult = ({ data }) => {
         </div>
 
         {/* Overall Score - Hero Card */}
-        <Card className={`bg-gradient-to-br ${getScoreColor(result.overallScore)} border-0 shadow-2xl overflow-hidden relative`}>
+        <Card className={`bg-linear-to-br ${getScoreColor(result.overallScore)} border-0 shadow-2xl overflow-hidden relative`}>
           <div className="absolute inset-0 bg-black/40 backdrop-blur-sm"></div>
           <CardContent className="p-10 md:p-16 text-center relative z-10">
             <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-white/20 mb-6">
@@ -111,7 +111,7 @@ const AnalysisResult = ({ data }) => {
           <Card className="bg-zinc-900 border border-zinc-800 shadow-xl">
             <CardContent className="p-8 md:p-10">
               <div className="flex items-center gap-3 mb-8">
-                <div className="w-1 h-8 bg-gradient-to-b from-purple-500 to-blue-500 rounded-full"></div>
+                <div className="w-1 h-8 bg-linear-to-b from-purple-500 to-blue-500 rounded-full"></div>
                 <h3 className="text-xl md:text-2xl font-bold text-white">Score Breakdown</h3>
               </div>
               <div className="space-y-4">
@@ -125,7 +125,7 @@ const AnalysisResult = ({ data }) => {
                     </div>
                     <div className="w-full bg-zinc-800 rounded-full h-2 overflow-hidden">
                       <div 
-                        className={`h-full bg-gradient-to-r ${getScoreColor(value)} rounded-full transition-all duration-500`}
+                        className={`h-full bg-linear-to-r ${getScoreColor(value)} rounded-full transition-all duration-500`}
                         style={{ width: `${value}%` }}
                       />
                     </div>
@@ -154,7 +154,7 @@ const AnalysisResult = ({ data }) => {
               <div className="space-y-3">
                 {result.ats.issues.map((issue, i) => (
                   <div key={i} className="flex gap-3 p-4 bg-zinc-800/50 rounded-lg border border-zinc-700/50 hover:border-orange-500/50 transition-colors">
-                    <div className="w-1.5 h-1.5 rounded-full bg-orange-500 mt-2 flex-shrink-0"></div>
+                    <div className="w-1.5 h-1.5 rounded-full bg-orange-500 mt-2 shrink-0"></div>
                     <p className="text-sm md:text-base text-zinc-300">{issue}</p>
                   </div>
                 ))}
@@ -177,7 +177,7 @@ const AnalysisResult = ({ data }) => {
                 {result.skills.matched.map((skill, index) => (
                   <Badge
                     key={skill}
-                    className="bg-gradient-to-r from-purple-600 to-blue-500 text-white border-0 px-4 py-2 text-sm md:text-base font-medium hover:shadow-lg hover:scale-105 transition-all"
+                    className="bg-linear-to-r from-purple-600 to-blue-500 text-white border-0 px-4 py-2 text-sm md:text-base font-medium hover:shadow-lg hover:scale-105 transition-all"
                   >
                     {skill}
                   </Badge>
@@ -267,7 +267,7 @@ const AnalysisResult = ({ data }) => {
               <div className="space-y-3">
                 {result.grammarAndFormatting.issues.map((issue, i) => (
                   <div key={i} className="flex gap-3 p-4 bg-zinc-800/50 rounded-lg border border-zinc-700/50 hover:border-yellow-500/50 transition-colors">
-                    <div className="w-1.5 h-1.5 rounded-full bg-yellow-500 mt-2 flex-shrink-0"></div>
+                    <div className="w-1.5 h-1.5 rounded-full bg-yellow-500 mt-2 shrink-0"></div>
                     <p className="text-sm md:text-base text-zinc-300">{issue}</p>
                   </div>
                 ))}
@@ -279,7 +279,7 @@ const AnalysisResult = ({ data }) => {
                   <div className="space-y-2">
                     {result.grammarAndFormatting.suggestions.map((suggestion, i) => (
                       <div key={i} className="flex gap-3 p-3 bg-yellow-500/5 rounded-lg border border-yellow-500/20">
-                        <CheckCircle className="w-5 h-5 text-yellow-500 flex-shrink-0 mt-0.5" />
+                        <CheckCircle className="w-5 h-5 text-yellow-500 shrink-0 mt-0.5" />
                         <p className="text-sm md:text-base text-zinc-300">{suggestion}</p>
                       </div>
                     ))}
@@ -305,7 +305,7 @@ const AnalysisResult = ({ data }) => {
                 <div className="space-y-3">
                   {result.strengths.map((item, i) => (
                     <div key={i} className="flex gap-3 p-3 bg-green-500/5 rounded-lg border border-green-500/20">
-                      <CheckCircle className="w-5 h-5 text-green-500 flex-shrink-0 mt-0.5" />
+                      <CheckCircle className="w-5 h-5 text-green-500 shrink-0 mt-0.5" />
                       <p className="text-sm md:text-base text-zinc-300">{item}</p>
                     </div>
                   ))}
@@ -327,7 +327,7 @@ const AnalysisResult = ({ data }) => {
                 <div className="space-y-3">
                   {result.weaknesses.map((item, i) => (
                     <div key={i} className="flex gap-3 p-3 bg-red-500/5 rounded-lg border border-red-500/20">
-                      <AlertCircle className="w-5 h-5 text-red-500 flex-shrink-0 mt-0.5" />
+                      <AlertCircle className="w-5 h-5 text-red-500 shrink-0 mt-0.5" />
                       <p className="text-sm md:text-base text-zinc-300">{item}</p>
                     </div>
                   ))}
@@ -339,25 +339,25 @@ const AnalysisResult = ({ data }) => {
 
         {/* Suggestions */}
         {result.suggestions && (result.suggestions.highImpact || result.suggestions.mediumImpact || result.suggestions.lowImpact) && (
-          <Card className="bg-gradient-to-br from-zinc-900 to-zinc-800 border border-zinc-700 shadow-xl">
+          <Card className="bg-linear-to-br from-zinc-900 to-zinc-800 border border-zinc-700 shadow-xl">
             <CardContent className="p-8 md:p-10">
               <div className="flex items-center gap-3 mb-8">
-                <div className="w-1 h-8 bg-gradient-to-b from-blue-500 to-purple-500 rounded-full"></div>
+                <div className="w-1 h-8 bg-linear-to-b from-blue-500 to-purple-500 rounded-full"></div>
                 <h3 className="text-xl md:text-2xl font-bold text-white">Improvement Suggestions</h3>
               </div>
               <div className="space-y-6">
                 {Object.entries(result.suggestions)
                   .filter(([_, items]) => items && items.length > 0)
                   .map(([level, items]) => (
-                    <div key={level} className="space-y-3">
+                    <div key={level} className="space-y-3 mt-6">
                       <div className="flex items-center gap-2">
                         <Badge 
                           className={`${
                             level.toLowerCase().includes('high') 
                               ? 'bg-red-500/20 text-red-300 border-red-500/50' 
                               : level.toLowerCase().includes('medium')
-                              ? 'bg-yellow-500/20 text-yellow-300 border-yellow-500/50'
-                              : 'bg-blue-500/20 text-blue-300 border-blue-500/50'
+                              ? 'bg-yellow-500/20 mt-4 text-yellow-300 border-yellow-500/50'
+                              : 'bg-blue-500/20 mt-4 text-blue-300 border-blue-500/50'
                           } border`}
                         >
                           {level.replace("Impact", " Impact")}
@@ -366,7 +366,7 @@ const AnalysisResult = ({ data }) => {
                       <div className="space-y-2 pl-4">
                         {items.map((item, i) => (
                           <div key={i} className="flex gap-3 p-3 bg-zinc-800/50 rounded-lg border border-zinc-700/50">
-                            <div className="w-1.5 h-1.5 rounded-full bg-blue-500 mt-2 flex-shrink-0"></div>
+                            <div className="w-1.5 h-1.5 rounded-full bg-blue-500 mt-2 shrink-0"></div>
                             <p className="text-sm md:text-base text-zinc-300">{item}</p>
                           </div>
                         ))}

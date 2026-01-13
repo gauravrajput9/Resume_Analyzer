@@ -7,6 +7,7 @@ import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 
 const LoginPage = () => {
+  const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [googleLoading, setGoogleLoading] = useState(false);
@@ -31,23 +32,28 @@ const LoginPage = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
     if (!email || !password) {
-      if (!email) toast.error("Please Enter the Email");
-      if (!password) toast.error("Please Enter A Password");
+      if (!email) toast.error("Please enter the email");
+      if (!password) toast.error("Please enter a password");
       return;
     }
+
     setLoading(true);
+
     const res = await signIn("credentials", {
       email,
       password,
-      redirect: false,
+      redirect: false, // IMPORTANT
     });
+
     setLoading(false);
-    console.log(res);
-    if (res.ok) {
-      toast.success("LogIn Successfull");
+
+    if (res?.ok) {
+      toast.success("Login successful");
+      router.push("/"); // or /dashboard
     } else {
-      toast.error("Login Failed");
+      toast.error(res?.error || "Login failed");
     }
   };
 

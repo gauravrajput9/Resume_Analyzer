@@ -13,9 +13,9 @@ export default function AnalysisOptions({
   setAnalysisOptions,
 }) {
   return (
-    <Card className="bg-[#111] border border-gray-800">
+    <Card className="bg-[#111] border p-5 border-gray-800">
       <CardHeader>
-        <CardTitle className="text-white text-lg">
+        <CardTitle className="mb-5 text-white text-lg">
           What would you like to analyze?
         </CardTitle>
       </CardHeader>

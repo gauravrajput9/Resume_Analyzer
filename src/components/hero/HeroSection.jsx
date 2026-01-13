@@ -1,16 +1,19 @@
 import { ArrowRight } from "lucide-react";
 import { Button } from "./Button";
 import Image from "next/image";
+import Link from "next/link";
+import { getServerSession } from "next-auth";
 
 export const Hero = async () => {
+  const {data: session} = getServerSession()
   return (
     <section className="min-h-screen flex flex-col items-center justify-center text-center px-6 pt-32 bg-black text-white">
-      <span className="mb-6 inline-flex items-center gap-2 px-4 py-2 rounded-full border border-white/10 bg-white/5 text-xs text-white/70">
+      <span className=" inline-flex items-center gap-2 px-4 py-2 rounded-full border border-white/10 bg-white/5 text-xs text-white/70">
         AI-powered resume insights
         <ArrowRight size={14} />
       </span>
 
-      <h1 className="text-4xl md:text-6xl font-semibold max-w-3xl leading-tight bg-linear-to-b from-white to-white/60 bg-clip-text text-transparent">
+      <h1 className="m-4 text-4xl md:text-6xl font-semibold max-w-3xl leading-tight bg-linear-to-b from-white to-white/60 bg-clip-text text-transparent">
         Optimize your resume <br /> for every job role
       </h1>
 
@@ -20,9 +23,9 @@ export const Hero = async () => {
       </p>
 
       <div className="mt-10 flex gap-4">
-        <Button variant="gradient" size="lg">
+        <Link href="/resume-analyzer" ><Button variant="gradient" size="lg">
           Analyze Resume
-        </Button>
+        </Button></Link>
         <Button variant="ghost" size="lg">
           View Sample Report
         </Button>
