@@ -2,27 +2,40 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 
 const OPTIONS = [
-  "ATS Score",
-  "Skill Gap Analysis",
-  "Grammar & Formatting",
-  "Job Description Match",
+  { key: "atsScore", label: "ATS Score" },
+  { key: "skillGapAnalysis", label: "Skill Gap Analysis" },
+  { key: "grammarAndFormatting", label: "Grammar & Formatting" },
+  { key: "jobDescriptionMatch", label: "Job Description Match" },
 ];
 
-export default function AnalysisOptions() {
+export default function AnalysisOptions({
+  analysisOptions,
+  setAnalysisOptions,
+}) {
   return (
-    <Card className="bg-[#111] border border-gray-800 transition-colors">
+    <Card className="bg-[#111] border border-gray-800">
       <CardHeader>
-        <CardTitle className="text-white text-lg">What would you like to analyze?</CardTitle>
+        <CardTitle className="text-white text-lg">
+          What would you like to analyze?
+        </CardTitle>
       </CardHeader>
 
       <CardContent className="grid gap-4 sm:grid-cols-2">
-        {OPTIONS.map((option) => (
+        {OPTIONS.map(({ key, label }) => (
           <div
-            key={option}
-            className="flex items-center gap-3 rounded-md border border-gray-800 p-3 transition-colors"
+            key={key}
+            className="flex items-center gap-3 rounded-md border border-gray-800 p-3"
           >
-            <Checkbox defaultChecked className="ring-white" />
-            <span className="text-white text-sm font-medium">{option}</span>
+            <Checkbox
+              checked={analysisOptions[key]}
+              onCheckedChange={(value) =>
+                setAnalysisOptions((prev) => ({
+                  ...prev,
+                  [key]: value === true,
+                }))
+              }
+            />
+            <span className="text-white text-sm font-medium">{label}</span>
           </div>
         ))}
       </CardContent>

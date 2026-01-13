@@ -22,6 +22,7 @@ export async function POST(req) {
     // Extract text
     const text = await extractTextFromPDF(buffer);
 
+    // console.log("Text from pdf parse: ",text)
     return NextResponse.json({ text });
   } catch (err) {
     console.error(err);

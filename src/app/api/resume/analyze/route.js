@@ -1,9 +1,12 @@
 import { NextResponse } from "next/server";
-import { callAI } from "@/lib/ai";
+import Resume from "../../../../../models/resume.model"
+import { callAI } from "@/lib/ai"
+import { connectDB } from "@/lib/mongodb";
+
 
 export async function POST(req) {
   try {
-    const { text } = await req.json();
+    const { text, options, jobDescription } = await req.json();
 
     if (!text) {
       return NextResponse.json(
@@ -12,23 +15,190 @@ export async function POST(req) {
       );
     }
 
-    // Limit text length to prevent timeouts (roughly 8000 characters)
-    const truncatedText = text.length > 8000 ? text.substring(0, 8000) + "... (truncated)" : text;
+    const truncatedText =
+      text.length > 8000 ? text.substring(0, 8000) + "... (truncated)" : text;
 
     const prompt = `
-Analyze the following resume and give simple feedback:
+      You are an enterprise-grade ATS resume analysis engine used in hiring platforms.
 
-- Strengths
-- Weaknesses
-- Improvement suggestions
+      Your task is to analyze the resume STRICTLY based on:
+      - User-selected analysis options
+      - The provided resume text
+      - The job description (ONLY if provided)
 
-Resume:
-${truncatedText}
-`;
+      You must produce:
+      - Deterministic
+      - Resume-anchored
+      - Evidence-based
+      - UI-safe results
 
-    const result = await callAI(prompt);
+      Return STRICT JSON ONLY. 
+      Do NOT include explanations, markdown, or extra text.
 
-    return NextResponse.json({ result });
+      ----------------------------------
+      USER SELECTED ANALYSIS OPTIONS
+      ----------------------------------
+      ATS Score: ${options.atsScore}
+      Skill Gap Analysis: ${options.skillGapAnalysis}
+      Grammar & Formatting: ${options.grammarAndFormatting}
+      Job Description Match: ${options.jobDescriptionMatch}
+
+      ----------------------------------
+      MANDATORY OUTPUT STRUCTURE
+      ----------------------------------
+      {
+        "overallScore": number (0–100),
+
+        "scoreBreakdown": {
+          "ats": number | null,
+          "skills": number | null,
+          "content": number | null
+        },
+
+        "ats": {
+          "status": "Excellent" | "Good" | "Average" | "Poor" | null,
+          "issues": string[] | null
+        },
+
+        "skills": {
+          "matched": string[] | null,
+          "missing": string[] | null
+        },
+
+        "jobMatch": {
+          "matchPercentage": number | null,
+          "matchedKeywords": string[] | null,
+          "missingKeywords": string[] | null
+        },
+
+        "grammarAndFormatting": {
+          "issues": string[] | null,
+          "suggestions": string[] | null
+        },
+
+        "strengths": string[],
+        "weaknesses": string[],
+
+        "suggestions": {
+          "highImpact": string[],
+          "mediumImpact": string[],
+          "lowImpact": string[]
+        }
+      }
+
+      ----------------------------------
+      CRITICAL RULES (MUST FOLLOW)
+      ----------------------------------
+      1. If an analysis option is FALSE:
+        - Set ALL related fields to null
+        - Do NOT infer, estimate, or fabricate data
+
+      2. Resume Anchoring (MANDATORY):
+        - Every issue, missing skill, and suggestion MUST reference
+          a specific section, wording issue, or explicit absence
+        - Generic advice is NOT allowed
+
+      3. No Empty Arrays:
+        - If no items exist, return null (never [])
+
+      4. Skills Analysis:
+        - "matched" = exact keywords explicitly present in resume
+        - "missing" = ATS-relevant keywords NOT present
+        - Use concrete tools/technologies only (React, MySQL, REST APIs)
+        - Do NOT use abstract phrases (e.g., "experience with databases")
+
+      5. ATS Analysis:
+        - Focus on section structure, headings, bullet clarity,
+          keyword density, and action verbs
+        - Each issue must be resume-specific
+
+      6. Grammar & Formatting:
+        - Identify concrete problems (tense mismatch, symbols, bullets)
+        - Each suggestion must map directly to a listed issue
+        - Do NOT duplicate ATS issues here
+
+      7. Job Description Match:
+        - If Job Description Match is FALSE → jobMatch = null
+        - If TRUE but no job description provided → jobMatch = null
+        - If TRUE and job description provided:
+            • Extract matched and missing keywords
+            • Calculate realistic matchPercentage
+            • If matchPercentage = 0 → missingKeywords MUST NOT be null
+
+      8. Scoring (STRICT):
+        - scoreBreakdown values are RAW scores (0–100)
+        - overallScore is a weighted average of ENABLED sections ONLY
+        - Weights:
+            • ATS: 35%
+            • Skills: 40%
+            • Content: 25%
+        - Disabled sections are excluded from calculation
+
+      9. Strengths vs Weaknesses:
+        - Strengths = high-level positives
+        - Weaknesses = summarized themes
+        - Do NOT duplicate ATS or grammar issues verbatim
+
+      ----------------------------------
+      SUGGESTION PRIORITY RULES
+      ----------------------------------
+      High Impact:
+      - Missing keywords
+      - Missing critical sections
+      - Direct ATS improvements
+
+      Medium Impact:
+      - Skill reinforcement via projects
+      - Content clarity improvements
+
+      Low Impact:
+      - Minor formatting or polish
+
+      ----------------------------------
+      IMPORTANT CONSTRAINTS
+      ----------------------------------
+      - Base analysis ONLY on resume text
+      - Do NOT hallucinate experience or skills
+      - No duplicated points across sections
+      - Concise, UI-friendly language
+      - Output MUST be valid JSON
+      - Do NOT wrap output in code blocks
+
+      ----------------------------------
+      JOB DESCRIPTION
+      ----------------------------------
+      ${jobDescription || "Not provided"}
+
+      ----------------------------------
+      RESUME TEXT
+      ----------------------------------
+      ${truncatedText}
+      `;
+
+    const rawResult = await callAI(prompt);
+
+    let parsedResult;
+    try {
+      parsedResult = JSON.parse(rawResult);
+    } catch {
+      return NextResponse.json(
+        { error: "Invalid AI JSON output" },
+        { status: 500 }
+      );
+    }
+
+    await connectDB();
+
+    const doc = await Resume.create({
+      result: parsedResult,
+    });
+
+    return NextResponse.json({
+      success: true,
+      result: parsedResult,
+      resultId: doc._id.toString(),
+    });
+
   } catch (error) {
     console.error("Error in analyze route:", error);
     return NextResponse.json(
@@ -37,3 +207,9 @@ ${truncatedText}
     );
   }
 }
+
+
+
+
+
+

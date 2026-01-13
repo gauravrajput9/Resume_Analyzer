@@ -5,20 +5,33 @@ import AnalysisOptions from "@/components/resume/AnalysisOptions";
 import AnalyzeButton from "@/components/resume/AnalyzeButton";
 import AnalysisProgress from "@/components/resume/AnalysisProgress";
 import { useState } from "react";
-import FakeRes from "@/components/fakeres";
+import JobDescriptionInput from "@/components/resume/JobDescription";
+import { Checkbox } from "@/components/ui/checkbox";
+import { useRouter } from "next/navigation";
 
 export default function ResumeAnalyzerPage() {
+  const router = useRouter()
   const [file, setFile] = useState(null);
   const [loading, setLoading] = useState(false);
-  const [result, setResult] = useState(null);
+  // const [result, setResult] = useState(null);
   const [error, setError] = useState(null);
+
+  const [analysisOptions, setAnalysisOptions] = useState({
+    atsScore: true,
+    skillGapAnalysis: true,
+    grammarAndFormatting: true,
+    jobDescriptionMatch: true,
+  });
+
+  const [jobDescription, setJobdescription] = useState("");
+  const [openJD, setOpenJD] = useState(false);
 
   const handleAnalyze = async () => {
     if (!file) return;
 
     setLoading(true);
     setError(null);
-    setResult(null);
+    // setResult(null);
 
     try {
       const formData = new FormData();
@@ -37,6 +50,7 @@ export default function ResumeAnalyzerPage() {
       }
 
       const result = await response.json();
+      console.log(result.text)
 
       // send the data to the ai for resume Analysis
       if (!result.text) {
@@ -48,7 +62,7 @@ export default function ResumeAnalyzerPage() {
       const analyzeRes = await fetch("/api/resume/analyze", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ text: result.text }),
+        body: JSON.stringify({ text: result.text, options: analysisOptions, description: jobDescription }),
       });
 
       if (!analyzeRes.ok) {
@@ -59,7 +73,9 @@ export default function ResumeAnalyzerPage() {
       }
 
       const analyzeData = await analyzeRes.json();
-      setResult(analyzeData.result);
+      console.log(analyzeData.result)
+      router.push(`/resume-analyzer/results?id=${analyzeData.resultId}`)
+      
     } catch (error) {
       console.error("Error:", error);
       setError(error.message || "An unexpected error occurred");
@@ -83,7 +99,39 @@ export default function ResumeAnalyzerPage() {
         <ResumeUpload file={file} setFile={setFile} />
 
         {/* Analysis Options */}
-        {file && <AnalysisOptions />}
+        {file && (
+          <AnalysisOptions
+            analysisOptions={analysisOptions}
+            setAnalysisOptions={setAnalysisOptions}
+          />
+        )}
+
+        <div className="space-y-3">
+          <div className="flex items-center gap-2">
+            <Checkbox
+              checked={openJD}
+              onCheckedChange={(checked) => {
+                const isChecked = checked === true;
+                setOpenJD(isChecked);
+
+                // Optional but recommended: clear JD when unchecked
+                if (!isChecked) {
+                  setJobdescription("");
+                }
+              }}
+            />
+            <p className="text-sm text-gray-300">
+              Do you want to provide a Job Description you are applying for?
+            </p>
+          </div>
+
+          {file && openJD && (
+            <JobDescriptionInput
+              value={jobDescription}
+              onChange={setJobdescription}
+            />
+          )}
+        </div>
 
         {/* Analyze Button + Progress */}
         <div className="flex flex-col items-center gap-4">
@@ -100,8 +148,6 @@ export default function ResumeAnalyzerPage() {
             </div>
           )}
         </div>
-
-        <FakeRes data={result} />
       </div>
     </div>
   );
