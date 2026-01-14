@@ -4,10 +4,10 @@ import { Footer } from "./Footer";
 
 export default function SaaSHero() {
   return (
-    <main className="bg-black text-white">
+    <main className="bg-black text-white min-h-screen">
       <Navigation />
       <Hero />
-      <Footer/>
+      <Footer />
     </main>
   );
 }

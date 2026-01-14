@@ -1,11 +1,18 @@
 import { NextResponse } from "next/server";
+import mongoose from "mongoose";
 import Resume from "../../../../../models/resume.model"
 import { callAI } from "@/lib/ai"
 import { connectDB } from "@/lib/mongodb";
+import { getServerSession } from "next-auth";
+import { authOptions } from "../../auth/[...nextauth]/route";
 
 
 export async function POST(req) {
+  
   try {
+    const session = await getServerSession(authOptions);
+    console.log("User: ",session)
+
     const { text, options, jobDescription } = await req.json();
 
     if (!text) {
@@ -176,7 +183,6 @@ export async function POST(req) {
       `;
 
     const rawResult = await callAI(prompt);
-
     let parsedResult;
     try {
       parsedResult = JSON.parse(rawResult);
@@ -188,15 +194,17 @@ export async function POST(req) {
     }
 
     await connectDB();
+    console.log(session.user.id)
 
     const doc = await Resume.create({
+      userId: new mongoose.Types.ObjectId(session.user.id),
       result: parsedResult,
     });
 
     return NextResponse.json({
       success: true,
       result: parsedResult,
-      resultId: doc._id.toString(),
+      resultId: doc._id.toString()
     });
 
   } catch (error) {

@@ -5,11 +5,8 @@ import User from "../../models/user.model";
 import { connectDB } from "@/lib/mongodb";
 
 
-export const signUp = async (formData) => {
+export const signUp = async (name, email, password) => {
   try {
-    const name = formData.get("name");
-    const email = formData.get("email");
-    const password = formData.get("password");
 
     await connectDB();
 

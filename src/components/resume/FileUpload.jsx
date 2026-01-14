@@ -67,7 +67,7 @@ export default function ResumeUpload({ file, setFile }) {
         </label>
 
         {file && (
-          <div className="mt-6 flex items-center justify-center gap-2 text-sm text-white">
+          <div className="mt-3 flex items-center justify-center gap-2 text-sm text-white">
             <FileText className="h-4 w-4" />
             <span className="font-medium">{file.name}</span>
           </div>

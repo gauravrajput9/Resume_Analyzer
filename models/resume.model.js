@@ -2,13 +2,28 @@ import mongoose from "mongoose";
 
 const ResumeResultSchema = new mongoose.Schema(
   {
+    userId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      required: true,
+      index: true,
+    },
+
     result: {
-      type: Object, // store full AI JSON safely
+      type: Object, 
       required: true,
     },
+
+    createdAt: {
+      type: Date,
+      default: Date.now,
+      expires: 60 * 60 * 24 * 5, 
+    },
   },
-  { timestamps: true }
+  {
+    timestamps: false, 
+  }
 );
 
-export default mongoose.models.ResumeResult ||
-  mongoose.model("ResumeResult", ResumeResultSchema);
+export default mongoose.models.Resume ||
+  mongoose.model("Resume", ResumeResultSchema);

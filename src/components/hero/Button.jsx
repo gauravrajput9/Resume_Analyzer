@@ -1,4 +1,5 @@
 'use client'
+
 export const Button = ({
   variant = "default",
   size = "default",
@@ -10,10 +11,18 @@ export const Button = ({
     "inline-flex items-center justify-center rounded-md font-medium transition-all focus:outline-none disabled:opacity-50";
 
   const variants = {
+    /* Existing */
     default: "bg-white text-black hover:bg-gray-100",
     ghost: "text-white hover:bg-white/10",
     gradient:
-      "bg-gradient-to-b from-white via-white/90 to-white/60 text-black hover:scale-105 active:scale-95",
+      "bg-gradient-to-b from-white via-white/90 to-white/60 text-black  active:scale-95",
+
+    /* ✅ NEW – Navbar themed */
+    navGhost:
+      "bg-white/5 text-white/80 border border-white/10 backdrop-blur-md hover:bg-white/10 hover:text-white hover:border-purple-500/40",
+
+    navGradient:
+      "bg-gradient-to-r from-purple-600 to-pink-600 text-white shadow-lg shadow-purple-500/30 hover:shadow-pink-500/40 hover:scale-[1.03] active:scale-95",
   };
 
   const sizes = {

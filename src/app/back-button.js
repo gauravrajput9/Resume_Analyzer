@@ -7,7 +7,7 @@ export default function BackButton() {
   return (
     <Button
       variant="ghost"
-      size="lg"
+      size="default"
       className="inline-flex items-center gap-2"
       onClick={() => window.history.back()}
     >
@@ -16,4 +16,5 @@ export default function BackButton() {
     </Button>
   )
 }
+
 

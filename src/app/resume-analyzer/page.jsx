@@ -8,9 +8,13 @@ import { useState } from "react";
 import JobDescriptionInput from "@/components/resume/JobDescription";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useRouter } from "next/navigation";
+import BackButton from "../back-button";
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
+import { Home } from "lucide-react";
 
 export default function ResumeAnalyzerPage() {
-  const router = useRouter()
+  const router = useRouter();
   const [file, setFile] = useState(null);
   const [loading, setLoading] = useState(false);
   // const [result, setResult] = useState(null);
@@ -50,7 +54,7 @@ export default function ResumeAnalyzerPage() {
       }
 
       const result = await response.json();
-      console.log(result.text)
+      console.log(result.text);
 
       // send the data to the ai for resume Analysis
       if (!result.text) {
@@ -62,7 +66,11 @@ export default function ResumeAnalyzerPage() {
       const analyzeRes = await fetch("/api/resume/analyze", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ text: result.text, options: analysisOptions, description: jobDescription }),
+        body: JSON.stringify({
+          text: result.text,
+          options: analysisOptions,
+          description: jobDescription,
+        }),
       });
 
       if (!analyzeRes.ok) {
@@ -73,9 +81,8 @@ export default function ResumeAnalyzerPage() {
       }
 
       const analyzeData = await analyzeRes.json();
-      console.log(analyzeData.result)
-      router.push(`/resume-analyzer/results?id=${analyzeData.resultId}`)
-      
+      console.log(analyzeData.result);
+      router.push(`/resume-analyzer/results?id=${analyzeData.resultId}`);
     } catch (error) {
       console.error("Error:", error);
       setError(error.message || "An unexpected error occurred");
@@ -87,6 +94,25 @@ export default function ResumeAnalyzerPage() {
   return (
     <div className="min-h-screen bg-black text-white px-4 py-10 transition-colors">
       <div className="mx-auto max-w-4xl space-y-10">
+        {/* Top Navigation */}
+        <div className="relative">
+          <div className="absolute top-0 left-0">
+            <BackButton />
+          </div>
+
+          <div className="absolute top-0 right-0">
+            <Link href="/">
+              <Button
+                variant="default"
+                className="flex items-center gap-2 bg-white text-black hover:bg-gray-200"
+              >
+                <Home className="h-4 w-4" />
+                Home
+              </Button>
+            </Link>
+          </div>
+        </div>
+
         {/* Header */}
         <div className="text-center space-y-3">
           <h1 className="text-4xl font-bold">Resume Analyzer</h1>
@@ -95,10 +121,8 @@ export default function ResumeAnalyzerPage() {
           </p>
         </div>
 
-        {/* Resume Upload */}
         <ResumeUpload file={file} setFile={setFile} />
 
-        {/* Analysis Options */}
         {file && (
           <AnalysisOptions
             analysisOptions={analysisOptions}
@@ -114,7 +138,6 @@ export default function ResumeAnalyzerPage() {
                 const isChecked = checked === true;
                 setOpenJD(isChecked);
 
-                // Optional but recommended: clear JD when unchecked
                 if (!isChecked) {
                   setJobdescription("");
                 }
