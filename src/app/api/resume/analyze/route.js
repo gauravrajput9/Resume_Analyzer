@@ -1,19 +1,22 @@
 import { NextResponse } from "next/server";
 import mongoose from "mongoose";
-import Resume from "../../../../../models/resume.model"
-import { callAI } from "@/lib/ai"
+import Resume from "../../../../../models/resume.model";
+import { callAI } from "@/lib/ai";
 import { connectDB } from "@/lib/mongodb";
 import { getServerSession } from "next-auth";
 import { authOptions } from "../../auth/[...nextauth]/route";
-
+import { generateResumeHash } from "@/lib/GenerateHash";
 
 export async function POST(req) {
-  
   try {
-    const session = await getServerSession(authOptions);
-    console.log("User: ",session)
+    await connectDB();
 
-    const { text, options, jobDescription } = await req.json();
+    const session = await getServerSession(authOptions);
+    if (!session) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    const { text, options, jobDescription, reAnalyze  } = await req.json();
 
     if (!text) {
       return NextResponse.json(
@@ -22,6 +25,25 @@ export async function POST(req) {
       );
     }
 
+    /* ---------------- HASH GENERATION ---------------- */
+    const resumeHash = generateResumeHash(text);
+
+    /* ---------------- DUPLICATE CHECK ---------------- */
+    const existingResume = await Resume.findOne({
+      userId: session.user.id,
+      resumeHash,
+    });
+
+    //same hash found, and user do not want to analyze the resume, then return the id of the existing one
+    if (existingResume && reAnalyze===false) {
+      return NextResponse.json({
+        reused: true,
+        result: existingResume.result,
+        resultId: existingResume._id.toString(),
+      });
+    }
+
+    /* ---------------- AI ANALYSIS ---------------- */
     const truncatedText =
       text.length > 8000 ? text.substring(0, 8000) + "... (truncated)" : text;
 
@@ -182,7 +204,9 @@ export async function POST(req) {
       ${truncatedText}
       `;
 
+
     const rawResult = await callAI(prompt);
+
     let parsedResult;
     try {
       parsedResult = JSON.parse(rawResult);
@@ -193,18 +217,21 @@ export async function POST(req) {
       );
     }
 
-    await connectDB();
-    console.log(session.user.id)
-
+    /* ---------------- SAVE RESULT ---------------- */
     const doc = await Resume.create({
       userId: new mongoose.Types.ObjectId(session.user.id),
+      resumeHash,
       result: parsedResult,
+      options,
+      jobDescription,
+      analyzedAt: new Date(),
     });
 
     return NextResponse.json({
       success: true,
+      reused: false,
       result: parsedResult,
-      resultId: doc._id.toString()
+      resultId: doc._id.toString(),
     });
 
   } catch (error) {

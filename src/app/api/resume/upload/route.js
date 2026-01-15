@@ -16,13 +16,10 @@ export async function POST(req) {
       return NextResponse.json({ error: "Only PDF files allowed" }, { status: 400 });
     }
 
-    // Convert File to Buffer
     const buffer = Buffer.from(await file.arrayBuffer());
 
-    // Extract text
     const text = await extractTextFromPDF(buffer);
 
-    // console.log("Text from pdf parse: ",text)
     return NextResponse.json({ text });
   } catch (err) {
     console.error(err);

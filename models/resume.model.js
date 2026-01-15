@@ -8,20 +8,24 @@ const ResumeResultSchema = new mongoose.Schema(
       required: true,
       index: true,
     },
-
+    resumeHash: {
+      type: String,
+      required: true,
+      index: true
+    },
     result: {
-      type: Object, 
+      type: Object,
       required: true,
     },
 
     createdAt: {
       type: Date,
       default: Date.now,
-      expires: 60 * 60 * 24 * 5, 
+      expires: 60 * 60 * 24 * 5,
     },
   },
   {
-    timestamps: false, 
+    timestamps: false,
   }
 );
 
