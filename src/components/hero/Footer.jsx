@@ -43,31 +43,15 @@ export const Footer = () => {
           {/* Quick Links */}
           <div className="flex flex-col gap-4">
             <h3 className="font-semibold text-white text-lg">Quick Links</h3>
-            {["Home", "Features", "Pricing"].map((item) =>
-              item === "Home" ? (
-                <>
-                  {" "}
-                  <a
-                    key={item}
-                    href={`/`}
-                    className="text-white/60 hover:text-white transition-colors duration-300 hover:translate-x-1 inline-block"
-                  >
-                    {item}
-                  </a>
-                </>
-              ) : (
-                <>
-                  {" "}
-                  <a
-                    key={item}
-                    href={`/${item.toLowerCase()}`}
-                    className="text-white/60 hover:text-white transition-colors duration-300 hover:translate-x-1 inline-block"
-                  >
-                    {item}
-                  </a>
-                </>
-              )
-            )}
+            {["Home", "Features", "Pricing"].map((item) => (
+              <a
+                key={item}
+                href={item === "Home" ? "/" : `/${item.toLowerCase()}`}
+                className="text-white/60 hover:text-white transition-colors duration-300 hover:translate-x-1 inline-block"
+              >
+                {item}
+              </a>
+            ))}
           </div>
 
           {/* Social Links */}

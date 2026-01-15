@@ -58,8 +58,7 @@ export const Navigation = () => {
                 size="sm"
                 onClick={() =>
                   signOut({
-                    redirect: true,
-                    callbackUrl: "/login",
+                     callbackUrl: window.location.origin,
                   })
                 }
               >
@@ -117,13 +116,41 @@ export const Navigation = () => {
               {item}
             </a>
           ))}
-          <div className="flex flex-col gap-3 mt-2">
-            <Button variant="ghost" size="sm">
-              Sign In
-            </Button>
-            <Button variant="gradient" size="sm">
-              Get Started
-            </Button>
+          <div className="flex flex-col gap-3 mt-3 w-full max-w-xs">
+            {session ? (
+              <>
+                <Button
+                  variant="outline"
+                  className="w-full justify-center"
+                  onClick={() =>
+                    signOut({
+                      redirect: true,
+                      callbackUrl: "/",
+                    })
+                  }
+                >
+                  Logout
+                </Button>
+
+                <Link href="/resume-analyzer" className="w-full">
+                  <Button className="w-full justify-center">
+                    Analyze Resume
+                  </Button>
+                </Link>
+              </>
+            ) : (
+              <>
+                <Link href="/login" className="w-full">
+                  <Button className="w-full justify-center">Sign In</Button>
+                </Link>
+
+                <Link href="/signup" className="w-full">
+                  <Button variant="secondary" className="w-full justify-center">
+                    Sign Up
+                  </Button>
+                </Link>
+              </>
+            )}
           </div>
         </div>
       </div>

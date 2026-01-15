@@ -7,7 +7,7 @@ export const dynamic = "force-dynamic";
 
 const ResumeAnalysisResult = async ({ searchParams }) => {
   const { id } = await searchParams;
-  
+
   if (!id) {
     notFound();
   }
@@ -15,6 +15,7 @@ const ResumeAnalysisResult = async ({ searchParams }) => {
   await connectDB();
 
   const data = await Resume.findById(id).lean();
+  console.log(data)
 
   if (!data) {
     notFound();

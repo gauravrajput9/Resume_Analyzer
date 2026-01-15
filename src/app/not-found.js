@@ -28,7 +28,7 @@ export default function NotFound() {
 
                 <div className="flex flex-col sm:flex-row gap-4 justify-center">
                     <Button
-                        asChild
+                        aschild
                         variant="gradient"
                         size="lg"
                         className="items-center gap-2"

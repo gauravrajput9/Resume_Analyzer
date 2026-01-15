@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { CheckCircle, AlertCircle, TrendingUp, TrendingDown, Award, FileText, Sparkles } from 'lucide-react';
+import SendEmail from './SendEmail';
 
 const AnalysisResult = ({ data }) => {
   const [displayScore, setDisplayScore] = useState(0);
@@ -377,6 +378,7 @@ const AnalysisResult = ({ data }) => {
             </CardContent>
           </Card>
         )}
+        <SendEmail report={data} />
       </div>
     </div>
   );
