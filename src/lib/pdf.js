@@ -1,4 +1,4 @@
-import { PDFParse } from "pdf-parse";
+import pdf from "pdf-parse";
 
 export const extractTextFromPDF = async (buffer) => {
   if (!Buffer.isBuffer(buffer)) {
@@ -6,12 +6,10 @@ export const extractTextFromPDF = async (buffer) => {
   }
 
   try {
-    const parser = new PDFParse({ data: buffer });
-    const result = await parser.getText();
-    await parser.destroy(); 
-    return result.text;
+    const data = await pdf(buffer);
+    return data.text;
   } catch (error) {
-    console.error("Extract pdf error: ", error);
+    console.error("Extract pdf error:", error);
     throw error;
   }
 };
